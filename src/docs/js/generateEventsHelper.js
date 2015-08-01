@@ -91,9 +91,9 @@ while ( ( entry = zis.nextEntry) != null) {
     }
     out.println('exports.' + fname + ' = function(callback,priority){ ');
     if (canary){
-      out.println('  return events.on(Packages.' + name + ',callback,priority);');
+      out.println('  return this.on(Packages.' + name + ',callback,priority);');
     } else { 
-      out.println('  return events.on(' + name + ',callback,priority);');
+      out.println('  return this.on(' + name + ',callback,priority);');
     }
     out.println('};');
   }
