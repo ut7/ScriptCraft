@@ -112,10 +112,10 @@ names.forEach(function(name) {
     out.println('exports.' + fname + ' = function(callback,priority){ ');
     if (canary) {
       out.println(
-        '  return events.on(Packages.' + name + ',callback,priority);'
+        '  return this.on(Packages.' + name + ',callback,priority);'
       );
     } else {
-      out.println('  return events.on(' + name + ',callback,priority);');
+      out.println('  return this.on(' + name + ',callback,priority);');
     }
     out.println('};');
   }
