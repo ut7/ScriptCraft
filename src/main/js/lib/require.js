@@ -288,7 +288,7 @@ When resolving module names to file paths, ScriptCraft uses the following rules.
     var codeFn = null;
     try {
       evalHooks.forEach(function(evalHook) {
-        var result = evalHook(code);
+        var result = evalHook(code, canonizedFilename);
         if (result.constructor !== String) {
           codeFn = result;
         } else {

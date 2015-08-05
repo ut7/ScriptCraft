@@ -608,8 +608,8 @@ function __onEnable(__engine, __plugin, __script) {
     }
   }
 
-  function engineEval(code) {
-    return __engine.eval(code);
+  function engineEval(code, fileName) {
+    return load({ script: code, name: fileName });
   }
 
   var moduleHooks = [engineEval];
@@ -665,35 +665,29 @@ function __onEnable(__engine, __plugin, __script) {
         //
         var code = fnBody;
         replHooks.forEach(function(xform) {
-          code = xform(code);
+          code = xform(code, '<repl>');
         });
         jsResult = code;
 
         if (typeof jsResult != 'undefined') {
-          if (jsResult == null) {
-            // engine eval will return null even if the result should be undefined
-            // this can be confusing so I think it's better to omit output for this case
-            // sender.sendMessage('(null)');
-          } else {
-            try {
-              if (isJavaObject(jsResult) || typeof jsResult === 'function') {
-                echo(sender, jsResult);
-              } else {
-                var replacer = function replacer(key, value) {
-                  return this[key] instanceof java.lang.Object
-                    ? '' + this[key]
-                    : value;
-                };
-                echo(sender, JSON.stringify(jsResult, replacer, 2));
-              }
-            } catch (displayError) {
-              logError(
-                'Error while trying to display result: ' +
-                  jsResult +
-                  ', Error: ' +
-                  displayError
-              );
+          try {
+            if (isJavaObject(jsResult) || typeof jsResult === 'function') {
+              echo(sender, jsResult);
+            } else {
+              var replacer = function replacer(key, value) {
+                return this[key] instanceof java.lang.Object
+                  ? '' + this[key]
+                  : value;
+              };
+              echo(sender, JSON.stringify(jsResult, replacer, 2));
             }
+          } catch (displayError) {
+            logError(
+              'Error while trying to display result: ' +
+                jsResult +
+                ', Error: ' +
+                displayError
+            );
           }
         }
       } catch (e) {
