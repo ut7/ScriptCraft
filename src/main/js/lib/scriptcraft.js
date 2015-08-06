@@ -706,7 +706,6 @@ function __onEnable(__engine, __plugin, __script) {
             ', Error: ' +
             e
         );
-        throw e;
       } finally {
         delete global.self;
         delete global.__engine;
