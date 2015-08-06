@@ -613,7 +613,18 @@ function __onEnable(__engine, __plugin, __script) {
   }
 
   var moduleHooks = [engineEval];
-  var replHooks = [engineEval];
+
+  function coffeeCompile(code, fileName) {
+    try {
+      code = require('coffee-script').CoffeeScript.compile(code, {
+        bare: true
+      });
+      console.log('CoffeeScript compilation result:' + code);
+    } catch (e) {}
+    return code;
+  }
+
+  var replHooks = [coffeeCompile, engineEval];
 
   global._moduleHooks = moduleHooks;
   global._replHooks = replHooks;
