@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd test/client
+
+docker run --rm -ti -v $PWD:/app -w /app --net="container:scriptcraft-canarymod-test" node node client.js

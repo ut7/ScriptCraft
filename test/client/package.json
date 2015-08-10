@@ -1,0 +1,16 @@
+{
+	"name": "minechat",
+	"version": "0.1.0",
+	"description": "Minecraft test client",
+	"main": "client.js",
+	"bin": "client.js",
+	"engines": { "node": ">=0.8" },
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/llbit/minechat.git"
+	},
+	"license": "MIT",
+	"dependencies": {
+		"mineflayer": ">=0.1.0"
+	}
+}
