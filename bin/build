@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker run -ti --rm -u 1000 -v $PWD:/work -w /work ant $*
