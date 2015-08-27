@@ -568,6 +568,40 @@ function __onEnable ( __engine, __plugin, __script ) {
     }
   }
 
+  function babelize(expr) {
+    var pb = new java.lang.ProcessBuilder("babel");
+    pb.redirectErrorStream(true);
+
+    var p = pb.start();
+
+    var result;
+
+    try {
+      p.outputStream.write(expr.getBytes());
+      p.outputStream.close();
+
+      var reader = new java.io.BufferedReader(new java.io.InputStreamReader(p.inputStream));
+
+      var lines = [];
+      var line;
+      while (null !== (line = reader.readLine())) {
+        lines.push(line);
+      }
+    } catch(e) {
+      console.log('ES6 compilation error:' + e);
+    }
+
+    if (p.isAlive()) {
+      p.destroyForcibly();
+    }
+
+    result = lines.join('\n');
+
+    console.log('ES6 compilation result:' + result);
+
+    return result;
+  }
+
   // cannot rely on native eval in jre7 and jre8
   // because ...
   // js var hearts
@@ -582,6 +616,8 @@ function __onEnable ( __engine, __plugin, __script ) {
       console.log('CoffeeScript compilation result:' + expr);
     } catch(e) {
     }
+
+    expr = babelize(expr);
 
     if ( nashorn ) {
       // On Nashorn, we can use the native `load` function, which preserves return types better
