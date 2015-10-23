@@ -155,6 +155,9 @@ var onTabCompleteJS = function() {
     name = parts[0];
     if (name == '') return; // fix issue #390
 
+    if ( ! name )
+      return;
+
     symbol = global[name];
 
     //print('DEBUG: name=' + name + ',symbol=' + symbol);
