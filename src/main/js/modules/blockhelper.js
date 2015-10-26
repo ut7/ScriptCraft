@@ -109,13 +109,21 @@ function applyFacing(block, metadata) {
       case blocks.chest:
       case blocks.enderchest:
       case blocks.dispenser:
+      case blocks.redstone_repeater:
+      case blocks.redstone_comparator:
         // bug: furnace, chest, dispenser don't always use the right metadata
         face([null, null, 'north', 'south', 'west', 'east'][metadata]);
         break;
+      case blocks.piston:
+      case blocks.sticky_piston:
       case blocks.torch:
         face(
           ['up' /* default */, 'east', 'west', 'south', 'north', 'up'][metadata]
         );
+        break;
+      case blocks.button_wood:
+      case blocks.stone_button:
+        face(['down', 'east', 'west', 'south', 'north', 'up'][metadata]);
         break;
     }
   }
