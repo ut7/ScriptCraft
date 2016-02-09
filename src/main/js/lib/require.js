@@ -250,6 +250,10 @@ When resolving module names to file paths, ScriptCraft uses the following rules.
     }
     buffered.close(); // close the stream so there's no file locks
 
+    if(/\.coffee$/.test(canonizedFilename)) {
+      code = require('coffee-script').CoffeeScript.compile(code, { bare: true });
+    }
+
     moduleInfo = {
       loaded: false,
       id: canonizedFilename,
