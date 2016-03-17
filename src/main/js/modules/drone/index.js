@@ -346,8 +346,11 @@ function makeTypeIdAndDataSetter() {
     };
   } else {
     console.log('Drone using CraftEvil.setTypeIdAndData method');
-    var CraftEvil = Java.type(server.class.package.name + '.util.CraftEvil');
+    var CraftEvil;
     return function(block, typeId, data, applyPhysics) {
+      if (!CraftEvil) {
+        CraftEvil = Java.type(server.class.package.name + '.util.CraftEvil');
+      }
       CraftEvil.setTypeIdAndData(block, typeId, data, applyPhysics);
     };
   }
