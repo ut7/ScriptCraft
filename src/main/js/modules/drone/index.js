@@ -399,25 +399,27 @@ function putBlock(x, y, z, blockId, metadata, world, update) {
 function Drone(x, y, z, dir, world) {
   this.record = false;
   var usePlayerCoords = false;
-  var player = typeof self !== 'undefined' ? self : null;
-  var playerPos;
-  if (x.location && x.name) {
+  var player = null;
+  if (x && x.location && x.name) {
     player = x;
+  } else {
+    if (typeof self !== 'undefined') {
+      player = self;
+    }
   }
-  playerPos = x.location;
 
-  var that = this;
-  var populateFromLocation = function(loc) {
-    that.x = loc.x;
-    that.y = loc.y;
-    that.z = loc.z;
-    that.dir = getDirFromRotation(loc);
-    that.world = loc.world;
+  var populateFromLocation = function(drone, loc) {
+    drone.x = loc.x;
+    drone.y = loc.y;
+    drone.z = loc.z;
+    drone.dir = getDirFromRotation(loc);
+    drone.world = loc.world;
   };
-  var mp = utils.getMousePos(player);
-  if (typeof x == 'undefined' || x.location) {
+  if (player != null) {
+    var mp = utils.getMousePos(player);
+    var playerPos = player.location;
     if (mp) {
-      populateFromLocation(mp);
+      populateFromLocation(this, mp);
       if (playerPos) {
         this.dir = getDirFromRotation(playerPos);
       }
@@ -431,7 +433,7 @@ function Drone(x, y, z, dir, world) {
       if (!playerPos) {
         return null;
       }
-      populateFromLocation(playerPos);
+      populateFromLocation(this, playerPos);
     }
   } else if (x instanceof Drone) {
     this.x = x.x;
@@ -441,7 +443,7 @@ function Drone(x, y, z, dir, world) {
     this.world = x.world;
   } else {
     if (arguments[0].x && arguments[0].y && arguments[0].z) {
-      populateFromLocation(arguments[0]);
+      populateFromLocation(this, arguments[0]);
     } else {
       this.x = x;
       this.y = y;

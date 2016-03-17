@@ -96,6 +96,7 @@ function runTests() {
     logger.info(testName);
     testsRun++;
     try {
+      global.self = undefined;
       test();
       return true;
     } catch(e) {
@@ -120,6 +121,12 @@ function runTests() {
 
 var Drone = require("src/main/js/modules/drone/index.js");
 
+function testDroneWithoutArgumentUsesSelfAsPlayer() {
+  global.self = {name: 'joe', location:{ x:10, y:15, z:20 }};
+  var drone = new Drone();
+  assertEqual([10, 15, 23], [drone.x, drone.y, drone.z]);
+}
+
 function testDroneGivenAPlayerWithoutMouseNorDirectionTakesLocationFromPlayerAndAdds3ToZ() {
   var player = {name: 'joe', location:{ x:10, y:15, z:20 }};
   var drone = new Drone(player);
@@ -134,14 +141,14 @@ function testDroneGivenAPlayerWithoutMouseLookingNorthTakesLocationFromPlayerAnd
 
 var blocks=require('blocks');
 function testDroneGivenAPlayerLookingNorthCreatesRedstoneRepeaterFacingSouth() {
-  var player = {location: {yaw:180}};
+  var player = {name: 'joe', location: {yaw:180}};
   var drone = new Drone(player);
   var meta =  drone.getBlockIdAndMeta(blocks.redstone_repeater)[1];
   assertEqual(0, meta);
 }
 
 function testDroneGivenAPlayerLookingEastCreatesRedstoneRepeaterFacingWest() {
-  var player = {location: {yaw:90}};
+  var player = {name: 'joe', location: {yaw:90}};
   var drone = new Drone(player);
   var meta =  drone.getBlockIdAndMeta(blocks.redstone_repeater)[1];
   assertEqual(3, meta);
