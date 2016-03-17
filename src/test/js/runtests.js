@@ -111,6 +111,13 @@ function testDroneWithoutArgumentUsesSelfAsPlayer() {
   assertEqual([10, 15, 23], [drone.x, drone.y, drone.z]);
 }
 
+function testDroneGivenACommandBlockStartFromItsPosition() {
+  var drone = new Drone({block: {location:{
+    x:10, y: 20, z:30
+  }}});
+  assertEqual([10, 20, 30], [drone.x, drone.y, drone.z]);
+}
+
 function testDroneGivenAPlayerWithoutMouseNorDirectionTakesLocationFromPlayerAndAdds3ToZ() {
   var player = {name: 'joe', location:{ x:10, y:15, z:20 }};
   var drone = new Drone(player);
