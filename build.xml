@@ -67,7 +67,7 @@
     <available file="${dist}/js/modules/underscore.js" property="underscore.present"/>
   </target>
 
-  <target name="test" description="Perform unit tests">
+  <target name="test" depends="compile-docs" description="Perform unit tests">
     <jscript-verbose src="src/test/js/runtests.js" />
   </target>
 
