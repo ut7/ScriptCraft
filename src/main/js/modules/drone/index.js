@@ -779,6 +779,7 @@ Drone.PLAYER_STAIRS_FACING = [ 0, 2, 1, 3 ];
 // for blocks 68 (wall signs) 65 (ladders) 61,62 (furnaces) 23 (dispenser) and 54 (chest)
 Drone.PLAYER_SIGN_FACING = [ 4, 2, 5, 3 ]; 
 Drone.PLAYER_TORCH_FACING = [ 2, 4, 1, 3 ];
+Drone.PLAYER_REDSTONE_FACING = [ 1, 2, 3, 0 ];
 
 Drone.extend('box', Drone.prototype.cuboid );
 Drone.extend('box0',Drone.prototype.cuboid0 );
@@ -816,9 +817,11 @@ function getBlockIdAndMeta( b ) {
       case blocks.chest:
       case blocks.enderchest:
       case blocks.dispenser:
+        defaultMeta = Drone.PLAYER_SIGN_FACING[ this.dir % 4 ];
+        break;
       case blocks.redstone_repeater:
       case blocks.redstone_comparator:
-        defaultMeta = Drone.PLAYER_SIGN_FACING[ this.dir % 4 ];
+        defaultMeta = Drone.PLAYER_REDSTONE_FACING[ this.dir % 4 ];
         break;
       case blocks.button_wood:
       case blocks.stone_button:
