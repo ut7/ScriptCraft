@@ -132,4 +132,19 @@ function testDroneGivenAPlayerWithoutMouseLookingNorthTakesLocationFromPlayerAnd
   assertEqual([10, 15, 17], [drone.x, drone.y, drone.z]);
 }
 
+var blocks=require('blocks');
+function testDroneGivenAPlayerLookingNorthCreatesRedstoneRepeaterFacingSouth() {
+  var player = {location: {yaw:180}};
+  var drone = new Drone(player);
+  var meta =  drone.getBlockIdAndMeta(blocks.redstone_repeater)[1];
+  assertEqual(0, meta);
+}
+
+function testDroneGivenAPlayerLookingEastCreatesRedstoneRepeaterFacingWest() {
+  var player = {location: {yaw:90}};
+  var drone = new Drone(player);
+  var meta =  drone.getBlockIdAndMeta(blocks.redstone_repeater)[1];
+  assertEqual(3, meta);
+}
+
 runTests();
