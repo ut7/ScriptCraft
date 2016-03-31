@@ -255,7 +255,7 @@ When resolving module names to file paths, ScriptCraft uses the following rules.
     }
     var compiledWrapper = null;
     try {
-      compiledWrapper = evaluate(code);
+        compiledWrapper = evaluate(code, canonizedFilename);
     } catch (e) {
       /*
        wph 20140313 JRE8 (nashorn) gives misleading linenumber of evaluating code not evaluated code.
