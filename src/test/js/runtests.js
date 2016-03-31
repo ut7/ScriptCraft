@@ -20,8 +20,8 @@ var logger = {
       logger.debug( 'loaded  ' + path );
     }
   };
-  var evaluator = function(code) {
-    return engine.eval(code);
+  var evaluator = function(code, filename) {
+    return load( { script: code, name: filename } );
   };
 
   global.require = configRequire("src/main/js",
