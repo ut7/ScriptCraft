@@ -20,8 +20,17 @@ var logger = {
       logger.debug( 'loaded  ' + path );
     }
   };
+
+  var nashorn = typeof Java != 'undefined';
+
+  global.nashorn = nashorn;
+
   var evaluator = function(code, filename) {
-    return load( { script: code, name: filename } );
+    if (nashorn) {
+      return load({ script: code, name: filename });
+    } else {
+      return engine.eval(code);
+    }
   };
 
   global.require = configRequire("src/main/js",
