@@ -32,3 +32,10 @@ exports.testDroneGivenAPlayerLookingEastCreatesRedstoneRepeaterFacingWest = func
   var meta =  drone.getBlockIdAndMeta(blocks.redstone_repeater)[1];
   assertEqual(3, meta);
 };
+
+exports.testDroneGivenALocationStartsAtThatLocationEvenIfAPlayerIsAvailable = function() {
+  global.self = {name: 'joe', location:{ x:10, y:15, z:20 }};
+  var location = {x: 5, y: 6, z: 7, world: "hello", yaw: 0};
+  var drone = new Drone(location);
+  assertEqual([5, 6, 7], [drone.x, drone.y, drone.z]);
+};
