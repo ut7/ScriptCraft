@@ -393,29 +393,39 @@ function putBlock(x, y, z, blockId, metadata, world, update) {
   }
   return block;
 }
+
+/* Does object look like a Player? */
+function isPlayerLike(x) {
+  return x && x.location && x.name;
+}
+
+function populateFromLocation(drone, loc) {
+  drone.x = loc.x;
+  drone.y = loc.y;
+  drone.z = loc.z;
+  drone.dir = getDirFromRotation(loc);
+  drone.world = loc.world;
+}
+
+function isLocationLike(object) {
+  return object.x && object.y && object.z;
+}
+
 /*
  Drone constructs a new Drone object
 */
 function Drone(x, y, z, dir, world) {
   this.record = false;
   var usePlayerCoords = false;
-  var player = null;
-  if (x && x.location && x.name) {
-    player = x;
-  } else {
-    if (typeof self !== 'undefined') {
-      player = self;
-    }
+  var player;
+
+  if (arguments.length == 0) {
+    player = self;
+  } else if (isPlayerLike(arguments[0])) {
+    player = arguments[0];
   }
 
-  var populateFromLocation = function(drone, loc) {
-    drone.x = loc.x;
-    drone.y = loc.y;
-    drone.z = loc.z;
-    drone.dir = getDirFromRotation(loc);
-    drone.world = loc.world;
-  };
-  if (player != null) {
+  if (player) {
     var mp = utils.getMousePos(player);
     var playerPos = player.location;
     if (mp) {
@@ -442,7 +452,7 @@ function Drone(x, y, z, dir, world) {
     this.dir = x.dir;
     this.world = x.world;
   } else {
-    if (arguments[0].x && arguments[0].y && arguments[0].z) {
+    if (isLocationLike(arguments[0])) {
       populateFromLocation(this, arguments[0]);
     } else {
       this.x = x;
