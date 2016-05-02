@@ -374,7 +374,6 @@ function isLocationLike(object) {
 */
 function Drone( x, y, z, dir, world ) {
   this.record = false;
-  var usePlayerCoords = false;
   var player;
 
   if ( arguments.length == 0 ) {
@@ -393,15 +392,15 @@ function Drone( x, y, z, dir, world ) {
       }
     } else {
       // base it on the player's current location
-      usePlayerCoords = true;
-      //
-      // it's possible that drone.js could be loaded by a non-playing op 
+
+      // it's possible that drone.js could be loaded by a non-playing op
       // (from the server console)
-      //
       if ( !playerPos ) {
         return null;
       }
+
       populateFromLocation(this, playerPos );
+      this.fwd( 3 );
     }
   } else {
     if ( isLocationLike(arguments[0]) ) {
@@ -423,9 +422,6 @@ function Drone( x, y, z, dir, world ) {
     }
   }
 
-  if ( usePlayerCoords ) {
-    this.fwd( 3 );
-  }
   this.chkpt( 'start' );
   this.record = true;
   this.history = [];
