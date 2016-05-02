@@ -88,7 +88,7 @@ function assertEqual(expected, actual) {
   }
 }
 
-function runTests() {
+function runTests(testModule) {
   var testsRun = 0;
 
   function execute_test(test) {
@@ -97,7 +97,7 @@ function runTests() {
     testsRun++;
     try {
       global.self = undefined;
-      test();
+      test.fn();
       return true;
     } catch(e) {
       java.lang.System.err.println("Test '" + testName + "' failed!");
@@ -106,52 +106,17 @@ function runTests() {
     }
   }
 
-  var tests = Object.keys(global).filter(function(name){
+  var tests = Object.keys(testModule).filter(function(name){
     return /^test/.test(name);
   }).map(function(name) {
-    return global[name];
+    return {name: name, fn: testModule[name]};
   });
 
   var success = tests.map(execute_test).every(function(r){return r;});
 
-  java.lang.System.out.println(testsRun + " tests run.");
+  logger.info(testsRun + " tests run.");
 
   java.lang.System.exit(success ? 0 : 1);
 }
 
-var Drone = require("src/main/js/modules/drone/index.js");
-
-function testDroneWithoutArgumentUsesSelfAsPlayer() {
-  global.self = {name: 'joe', location:{ x:10, y:15, z:20 }};
-  var drone = new Drone();
-  assertEqual([10, 15, 23], [drone.x, drone.y, drone.z]);
-}
-
-function testDroneGivenAPlayerWithoutMouseNorDirectionTakesLocationFromPlayerAndAdds3ToZ() {
-  var player = {name: 'joe', location:{ x:10, y:15, z:20 }};
-  var drone = new Drone(player);
-  assertEqual([10, 15, 23], [drone.x, drone.y, drone.z]);
-}
-
-function testDroneGivenAPlayerWithoutMouseLookingNorthTakesLocationFromPlayerAndSubtracts3FromZ() {
-  var player = {name: 'joe', location:{ x:10, y:15, z:20, yaw: 180 }};
-  var drone = new Drone(player);
-  assertEqual([10, 15, 17], [drone.x, drone.y, drone.z]);
-}
-
-var blocks=require('blocks');
-function testDroneGivenAPlayerLookingNorthCreatesRedstoneRepeaterFacingSouth() {
-  var player = {name: 'joe', location: {yaw:180}};
-  var drone = new Drone(player);
-  var meta =  drone.getBlockIdAndMeta(blocks.redstone_repeater)[1];
-  assertEqual(0, meta);
-}
-
-function testDroneGivenAPlayerLookingEastCreatesRedstoneRepeaterFacingWest() {
-  var player = {name: 'joe', location: {yaw:90}};
-  var drone = new Drone(player);
-  var meta =  drone.getBlockIdAndMeta(blocks.redstone_repeater)[1];
-  assertEqual(3, meta);
-}
-
-runTests();
+runTests(require('src/test/js/drone_tests.js'));
