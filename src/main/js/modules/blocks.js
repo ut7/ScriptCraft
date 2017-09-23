@@ -103,7 +103,6 @@ var blocks = {
       jungle: '126:11'
     },
     snow: 78,
-    stone: 44,
     oak: 126,
     spruce: '126:1',
     birch: '126:2',
