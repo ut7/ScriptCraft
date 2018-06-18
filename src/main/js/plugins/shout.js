@@ -1,0 +1,1 @@
+exports.shout = require('shout');
