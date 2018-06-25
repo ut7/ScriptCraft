@@ -15,7 +15,7 @@ if(__plugin.canary) {
 } else {
     var welcome = function(evt) {
         showScEditUrl(evt.player);
-    }
+    };
     events.playerRespawn(welcome);
     events.playerJoin(welcome);
 }
