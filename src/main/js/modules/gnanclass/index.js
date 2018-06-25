@@ -113,6 +113,60 @@ don't try to bar themselves and each other from scripting.
 var store = persist('gnanclass', { enableScripting: false }),
   File = java.io.File;
 
+// Return String[] containing all players function names
+// Only first level functions (not nested in objects) are returned
+// The player name is not included : for a user 'Gl0rf' and a function 'test', we'll return 'test', not 'Gl0rf.test'
+var findPlayerFunctions = function(player) {
+  var out       = [];
+  var playerObj = global[player.name];
+  if (typeof playerObj === "undefined") {
+    echo(player, "Could not find your object");
+    return out;
+  }
+  for (var key in playerObj) {
+    if (playerObj.hasOwnProperty(key) && typeof playerObj[key] == "function") {
+      out.push(key);
+    }
+  }
+  out.sort();
+  return out;
+};
+
+// Allow the user to directly execute his function by clicking on special links
+// Send a raw chat message containing special links for all his functions ; see findPlayerfunctions for limitations of included functions
+// Special links are displayed on two-columns
+var displayPlayerFunctions = function(player) {
+  if (!player) {
+    return;
+  }
+  var funcs = findPlayerFunctions(player);
+  var chat  = [];
+  for (var i = 0; i < funcs.length; i++) {
+    var name    = funcs[i];
+    var callStr = "/js " + player.name + "." + name + "()";
+    // change color based on oclumn
+    var color   = "blue";
+    if (i % 2 === 0) {
+      color = "light_purple";
+    }
+    var tmp = {text: name, clickEvent: {action: "run_command", value: callStr}, color: color};
+    chat.push(tmp);
+    if (i !== 0 && i % 2) {
+      chat.push({text: "\n"});
+    }
+    // Pad the second link to simulate two-columns ; this is not pixel perfect, but it's good enough
+    else {
+      var padLength = 40 - callStr.length;
+      var padding   = "";
+      for (var j = 0; j < padLength; j++) {
+        padding += " ";
+      }
+      chat.push({text: padding});
+    }
+  }
+  sendChat(player, chat);
+};
+
 function revokeScripting ( player ) {
   console.log('Disabling scripting for player ' + player.name);
   if (__plugin.bukkit){
@@ -278,6 +332,7 @@ function startWatching(scriptDir, player) {
     reloadPlayerModules(scriptDir,
         function(msg) { _notify((msg + '\n-----').red()); });
     _notify('Your code was reloaded !'.green());
+    displayPlayerFunctions(player);
   }
   _reload();
   watchDir( scriptDir, function( changedDir ){
