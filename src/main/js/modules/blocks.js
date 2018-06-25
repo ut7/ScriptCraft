@@ -103,7 +103,6 @@ var blocks = {
       jungle: '126:11'
     },
     snow: 78,
-    stone: 44,
     oak: 126,
     spruce: '126:1',
     birch: '126:2',
@@ -166,8 +165,8 @@ var blocks = {
   jackolantern: 91,
   cake: 92,
   redstone_repeater: 93,
-  redeston_repeater_active: 94,
-  stained_glass: { 
+  redstone_repeater_active: 94,
+  stained_glass: {
     white: 95 // all other colors added below
   },
   trapdoor: 96,
@@ -177,7 +176,8 @@ var blocks = {
     mossy: '98:1',
     cracked: '98:2',
     chiseled: '98:3',
-    red: 45
+    red: 45,
+    end: 206
   },
   mushroom_brown_huge: 99,
   mushroom_red_huge: 100,
@@ -214,7 +214,7 @@ var blocks = {
   carrots: 141,
   potatoes: 142,
   button_wood: 143,
-  skull: 144, mobhead: 144, 
+  skull: 144, mobhead: 144,
   anvil: 145,
   chest_trapped: 146,
   pressure_plate_weighted_light: 147,
@@ -226,7 +226,7 @@ var blocks = {
   quartzore: 153, netherquartzore: 153,
   hopper: 154,
   quartz: 155,
-  quartz_chiseled: '155:1', 
+  quartz_chiseled: '155:1',
   quartz_pillar_vertical: '155:2',
   quartz_pillar_horizontal: '155:3',
   quartz_pillar_cap: '155:4',
@@ -253,7 +253,7 @@ var blocks = {
   hardened_clay: 172,
   coal_block: 173,
   packed_ice: 174,
-  double_plant: 175, 
+  double_plant: 175,
   sunflower: 175,
   flower: {
     sunflower: 175,
@@ -265,7 +265,16 @@ var blocks = {
     yellow: 37,
     dandelion: 37,
     rose: 38,
-    red: 38
+    poppy: 38,
+    blueorchid: '38:1',
+    allium: '38:2',
+    azure_bluet: '38:3',
+    red_tulip: '38:4',
+    orange_tulip: '38:5',
+    white_tulip: '38:6',
+    pink_tulip: '38:7',
+    oxeye_daisy: '38:8',
+    chorus: 200,
   },
   bonemeal: '351:15',
   banner: {
@@ -282,29 +291,64 @@ var blocks = {
   },
   fence: {
     oak: 85,
+    nether_brick: 113,
     spruce: 188,
     birch: 189,
     jungle: 190,
     dark_oak: 191,
-    acacia: 192,
-    netherbrick: 113
-  }
+    acacia: 192
+  },
+  end_rod: 198,
+  chorus_plant: 199,
+  chorus_flower: 200,
+  grass_path: 208,
+  magma: 213,
+  nether_wart_block: 214,
+  red_nether_brick: 215,
+  bone_block: 216,
+  // Cannot use regular colorized blocks because glazed terracota are differents blocks
+  glazed_terracota: {
+    white: 235,
+    orange: 236,
+    magenta: 237,
+    light_blue: 238,
+    yellow: 239,
+    lime: 240,
+    pink: 241,
+    gray: 242,
+    light_gray: 243,
+    cyan: 244,
+    purple: 245,
+    blue: 246,
+    brown: 247,
+    green: 248,
+    red: 249,
+    black: 250
+  },
+  concrete: {
+    white: 251
+  },
+  concrete_powder: {
+    white: 252
+  },
 };
 
 // Add all available colors to colorized block collections
 
 var colorized_blocks = [
-  'wool', 
-  'stained_clay', 
-  'carpet', 
-  'stained_glass', 
-  'stained_glass_pane'
+  'wool',
+  'stained_clay',
+  'carpet',
+  'stained_glass',
+  'stained_glass_pane',
+  'concrete',
+  'concrete_powder'
 ];
 
 for (var i = 0, len = colorized_blocks.length; i < len; i++) {
   var block = colorized_blocks[i],
-      data_value = blocks[block].white;
-  
+    data_value = blocks[block].white;
+
   for (var color in colors) {
     blocks[block][color] = data_value + ':' + colors[color];
   }
