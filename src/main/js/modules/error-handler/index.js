@@ -148,7 +148,7 @@ var prettifyException = function(exception, allowedPaths) {
         return;
     }
     if (typeof allowedPaths === "undefined") {
-        allowedPaths = ["scriptcraft/players/", "minecraft/code"];
+        allowedPaths = ["scriptcraft/players/"];
     }
     var out = "";
 
