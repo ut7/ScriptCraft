@@ -73,6 +73,7 @@ var executableLink = function(displayName, color, callPath, args) {
     } else {
         callStr = "/js " + callPath + "()";
     }
+    callStr += "#f:" + displayName;
     var out = {
         text: displayName,
         clickEvent: {action: "run_command", value: callStr},
