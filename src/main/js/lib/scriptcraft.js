@@ -584,7 +584,12 @@ function __onEnable ( __engine, __plugin, __script ) {
   //
   function _eval(expr) {
     var result;
-
+    // Let's try to find a function name, to help with debugging
+    // We'll find a comment #f:fnName in our call ; so we need to search now (coffeescript evaluation will remove the comment)
+    var fnName = '<repl>';
+    if(expr.indexOf('#f:') != -1) {
+    	fnName = expr.substring(expr.indexOf('#f:') + '#f:'.length);
+    }
     try {
       expr = require('coffee-script').CoffeeScript.compile(expr, { bare: true });
       console.log('CoffeeScript compilation result:' + expr);
@@ -594,7 +599,7 @@ function __onEnable ( __engine, __plugin, __script ) {
     if ( nashorn ) {
       // On Nashorn, we can use the native `load` function, which preserves return types better
       // (`undefined` is not cast to `null`)
-      result = load( { script: expr, name: '<repl>' } );
+      result = load( { script: expr, name: fnName } );
     } else {
       result = __engine.eval( expr );
 
@@ -660,7 +665,8 @@ function __onEnable ( __engine, __plugin, __script ) {
         } 
       } catch ( e ) {
         logError( 'Error while trying to evaluate javascript: ' + fnBody + ', Error: '+ e );
-        echo( sender, 'Error while trying to evaluate javascript: ' + fnBody + ', Error: '+ e );
+        require('error-handler').handleException(e, sender);
+        //echo( sender, 'Error while trying to evaluate javascript: ' + fnBody + ', Error: '+ e );
       } finally {
         /*
          wph 20140312 don't delete self on nashorn until https://bugs.openjdk.java.net/browse/JDK-8034055 is fixed
