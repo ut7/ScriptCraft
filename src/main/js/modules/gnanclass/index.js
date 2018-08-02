@@ -1,5 +1,5 @@
 'use strict';
-/*global require, module, __plugin, __dirname, echo, persist, isOp, events, Packages, command, global */
+/*global require, module, __plugin, __dirname, echo, persist, isOp, events, Packages, command, global, setInterval, clearInterval, setTimeout, clearTimeout */
 var utils = require('utils'),
   watcher = require('watcher'),
   autoload = require('./autoload'),
@@ -83,7 +83,7 @@ programmatically enabling or disabling gnanclass mode.
 ### gnanclass.allowScripting() function
 
 Allow or disallow anyone who connects to the server (or is already
-connected) to use ScriptCraft. This function is preferable to granting 'ops' privileges 
+connected) to use ScriptCraft. This function is preferable to granting 'ops' privileges
 to every student in a Minecraft gnanclass environment.
 
 Whenever any file is added/edited or removed from any of the players/
@@ -106,14 +106,14 @@ To disallow scripting (and prevent players who join the server from using the co
 
     /js gnanclass.allowScripting( false, self )
 
-Only ops users can run the gnanclass.allowScripting() function - this is so that students 
+Only ops users can run the gnanclass.allowScripting() function - this is so that students
 don't try to bar themselves and each other from scripting.
 
 ***/
 var store = persist('gnanclass', { enableScripting: false }),
   File = java.io.File;
 
-function revokeScripting ( player ) { 
+function revokeScripting ( player ) {
   console.log('Disabling scripting for player ' + player.name);
   if (__plugin.bukkit){
     foreach( player.getEffectivePermissions(), function( perm ) {
@@ -125,7 +125,7 @@ function revokeScripting ( player ) {
     });
   }
   if (__plugin.canary){
-    // 
+    //
     var Canary = Packages.net.canarymod.Canary;
     Canary.permissionManager().removePlayerPermission('scriptcraft.evaluate',player);
   }
@@ -149,6 +149,8 @@ function stopWatchingAll() {
 }
 
 var playerEventHandlers = {};
+var playerIntervals = {};
+var playerTimeouts = {};
 
 function scriptDirFor(player) {
   var playerName = '' + player.name;
@@ -173,6 +175,32 @@ function reloadPlayerModules( playerDir, notificationCallback){
     eventHandlers = playerEventHandlers[playerDirPath];
   }
 
+  /*
+   Glorf 20171003 also unregister any timeout and interval registered
+   */
+  var intervals = playerIntervals[playerDirPath];
+  if (intervals){
+    for (var i = 0;i < intervals.length; i++){
+      clearInterval(intervals[i]);
+    }
+    intervals.length  = 0;
+  } else {
+    playerIntervals[playerDirPath] = [];
+    intervals = playerIntervals[playerDirPath];
+  }
+
+
+  var timeouts = playerTimeouts[playerDirPath];
+  if (timeouts){
+    for (var i = 0;i < timeouts.length; i++){
+      clearTimeout(timeouts[i]);
+    }
+    timeouts.length  = 0;
+  } else {
+    playerTimeouts[playerDirPath] = [];
+    timeouts = playerTimeouts[playerDirPath];
+  }
+
   var playerContext = {};
 
   /*
@@ -185,15 +213,38 @@ function reloadPlayerModules( playerDir, notificationCallback){
     eventHandlers.push(handler);
   };
 
+  /*
+   Gloorf 20171003 override setInterval()/setTimeout() so the timeout/interval object is stored to
+   be unregistered
+   */
+  var oldInterval = global.setInterval;
+  var newInterval = function(callback, delay) {
+      var handler = oldInterval(callback, delay);
+      intervals.push(handler);
+      return handler;
+  };
+
+  var oldTimeout = global.setTimeout;
+  var newTimeout = function(callback, delay) {
+      var handler = oldTimeout(callback, delay);
+      timeouts.push(handler);
+      return handler;
+  };
+
+
   try {
     events = playerEvents;
+    global.setInterval = newInterval;
+    global.setTimeout  = newTimeout;
 
     autoload( playerContext, playerDir, function (error) {
       notificationCallback(error);
     });
   } finally {
     events = oldEvents;
-  }
+    global.setInterval = oldInterval;
+    global.setTimeout  = oldTimeout;
+}
 
   var moduleName = playerDir.name.replace(/^([0-9])/,'_$1');
   global[moduleName] = playerContext;
@@ -218,7 +269,7 @@ function startWatching(scriptDir, player) {
 
   var dirName = scriptDir.name;
   scriptDir.mkdirs();
-  var _notify = 
+  var _notify =
     player ? function (msg) {
                echo(player, msg);
              }
@@ -232,11 +283,11 @@ function startWatching(scriptDir, player) {
   watchDir( scriptDir, function( changedDir ){
     var currentTime = new java.util.Date().getTime();
     //this check is here because this callback might get called multiple times for the watch interval
-    //one call for the file change and another for directory change 
+    //one call for the file change and another for directory change
     //(this happens only in Linux because in Windows the folder lastModifiedTime is not changed)
     if (currentTime - autoloadTime[dirName]>1000 ) {
       _reload();
-    } 
+    }
     autoloadTime[dirName] = currentTime;
   });
 }
@@ -262,7 +313,7 @@ var _gnanclass = {
     allowScriptingForConnectedPlayers(canScript);
     store.enableScripting = canScript;
 
-    echo( sender, 'Scripting turned ' + ( canScript ? 'on' : 'off' ) + 
+    echo( sender, 'Scripting turned ' + ( canScript ? 'on' : 'off' ) +
       ' for all players on server ' + serverAddress);
   }
 };
@@ -295,13 +346,13 @@ if ( store.enableScripting ) {
 allowScriptingForConnectedPlayers(store.enableScripting);
 
 if (__plugin.canary){
-  events.connection( function( event ) { 
+  events.connection( function( event ) {
     if ( store.enableScripting ) {
       grantScripting(event.player);
     }
   }, 'CRITICAL');
 } else {
-  events.playerJoin( function( event ) { 
+  events.playerJoin( function( event ) {
     if ( store.enableScripting ) {
       grantScripting(event.player);
     }
