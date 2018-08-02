@@ -3,6 +3,7 @@
 var utils = require('utils'),
   watcher = require('watcher'),
   autoload = require('./autoload'),
+  displayPlayerFunctions = require("clickable-chat").displayPlayerFunctions,
   foreach = utils.foreach,
   watchDir = watcher.watchDir,
   unwatchDir = watcher.unwatchDir,
@@ -221,6 +222,7 @@ function startWatching(scriptDir, player) {
   var _notify = 
     player ? function (msg) {
                echo(player, msg);
+               displayPlayerFunctions(player, true);
              }
            : function (){};
   function _reload() {
@@ -308,3 +310,4 @@ if (__plugin.canary){
   }, 'HIGHEST');
 }
 module.exports = _gnanclass;
+
