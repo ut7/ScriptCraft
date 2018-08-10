@@ -203,6 +203,11 @@ function grantScripting( player ) {
   console.log('Enabling scripting for player ' + player.name);
   if (__plugin.bukkit){
     player.addAttachment( __plugin, 'scriptcraft.*', true );
+
+    // 1.13: need to update commands list after changing permissions (SPIGOT-4258)
+    if (player.updateCommands) {
+      player.updateCommands();
+    }
   }
   if (__plugin.canary){
     player.permissionProvider.addPermission('scriptcraft.evaluate',true);
