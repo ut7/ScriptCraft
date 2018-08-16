@@ -54,7 +54,7 @@ function consMsg(params) {
 
 module.exports = function(logger) {
   function bukkitLog(level, restOfArgs) {
-    logger['log(java.util.logging.Level,java.lang.String)'](
+    logger.log(
       java.util.logging.Level[level],
       consMsg(restOfArgs)
     );
