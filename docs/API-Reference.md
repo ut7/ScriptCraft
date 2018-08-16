@@ -435,11 +435,14 @@ Walter Higgins
    * [Examples](#examples)
  * [Fireworks Module](#fireworks-module)
    * [Examples](#examples-1)
+ * [Inventory Module](#inventory-module)
+   * [Usage](#usage-2)
  * [Classroom Plugin](#classroom-plugin)
    * [jsp classroom command](#jsp-classroom-command)
    * [classroom.allowScripting() function](#classroomallowscripting-function)
- * [Inventory Module](#inventory-module)
-   * [Usage](#usage-2)
+ * [gnanclass Plugin](#gnanclass-plugin)
+   * [jsp gnanclass command](#jsp-gnanclass-command)
+   * [gnanclass.allowScripting() function](#gnanclassallowscripting-function)
  * [Asynchronous Input Module](#asynchronous-input-module)
  * [Lightning module](#lightning-module)
    * [Usage](#usage-3)
@@ -5002,6 +5005,52 @@ location. For example...
 
 ![firework example](img/firework.png)
 
+## Inventory Module
+This module provides functions to add items to, remove items from and check the 
+contents of a player or NPC's inventory. 
+
+### Usage
+The inventory module is best used in conjunction with the items module. See below for examples of usage.
+
+```javascript
+var inventory = require('inventory');
+var items = require('items');
+var utils = require('utils');
+
+// gives every player 2 cookies and a baked potatoe
+var bakedPotato = items.bakedPotato(1);
+var cookies2 = items.cookie(2);
+
+utils.players(function( player ){
+  inventory( player )
+    .add( cookies2 )
+    .add( bakedPotato )
+});
+
+// give a player 6 cookies then take away 4 of them
+
+inventory( player )
+  .add( items.cookie(6) )
+  .remove ( items.cookie(4) )
+
+// check if a player has any cookies
+
+var hasCookies = inventory(player).contains( items.cookie(1) );
+
+// Enchant an item and give it to the player (CraftBukkit/Spigot only)
+
+var luck = org.bukkit.enchantments.Enchantment.getByName("LUCK");
+var luckyRod = items.fishingRod( 1 );
+luckyRod.addEnchantment( luck, 3);
+inventory( player ).add( luckyRod );
+
+```
+The inventory module exposes a single function which when passed a player or NPC will return an object with 3 methods:
+
+* add : Adds items to the inventory (Expects parameters of type `net.canarymod.api.inventory.Item` - I strongly recommend using the `items` module for constructing items)
+* remove : removes items from the inventory (Expects parameters of type `net.canarymod.api.inventory.Item` - I strongly recommend using the `items` module for constructing items)
+* contains : checks to see if there is the specified type and amount of item in the inventory (Expects parameters of type `net.canarymod.api.inventory.Item` - I strongly recommend using the `items` module for constructing items)
+
 ## Classroom Plugin
 
 The `classroom` object contains a couple of utility functions for use
@@ -5099,51 +5148,102 @@ To disallow scripting (and prevent players who join the server from using the co
 Only ops users can run the classroom.allowScripting() function - this is so that students 
 don't try to bar themselves and each other from scripting.
 
-## Inventory Module
-This module provides functions to add items to, remove items from and check the 
-contents of a player or NPC's inventory. 
+## gnanclass Plugin
 
-### Usage
-The inventory module is best used in conjunction with the items module. See below for examples of usage.
+The `gnanclass` object contains a couple of utility functions for use
+in a gnanclass setting. The goal of these functions is to make it
+easier for tutors to facilitate ScriptCraft for use by students in a
+gnanclass environment. Although granting ScriptCraft access to
+students on a shared server is potentially risky (Students can
+potentially abuse it), it is slighlty less risky than granting
+operator privileges to each student. (Enterprising students will
+quickly realise how to grant themselves and others operator privileges
+once they have access to ScriptCraft).
+
+The goal of this module is not so much to enforce restrictions
+(security or otherwise) but to make it easier for tutors to setup a
+shared server so students can learn Javascript. When scripting is
+turned on, every player who joins the server will have a dedicated
+directory into which they can save scripts. All scripts in such
+directories are automatically watched and loaded into a global
+variable named after the player.
+
+So for example, if player 'walterh' joins the server, a `walterh`
+global variable is created. If a file `greet.js` with the following
+content is dropped into the `scriptcraft/players/walterh`
+directory...
 
 ```javascript
-var inventory = require('inventory');
-var items = require('items');
-var utils = require('utils');
-
-// gives every player 2 cookies and a baked potatoe
-var bakedPotato = items.bakedPotato(1);
-var cookies2 = items.cookie(2);
-
-utils.players(function( player ){
-  inventory( player )
-    .add( cookies2 )
-    .add( bakedPotato )
-});
-
-// give a player 6 cookies then take away 4 of them
-
-inventory( player )
-  .add( items.cookie(6) )
-  .remove ( items.cookie(4) )
-
-// check if a player has any cookies
-
-var hasCookies = inventory(player).contains( items.cookie(1) );
-
-// Enchant an item and give it to the player (CraftBukkit/Spigot only)
-
-var luck = org.bukkit.enchantments.Enchantment.getByName("LUCK");
-var luckyRod = items.fishingRod( 1 );
-luckyRod.addEnchantment( luck, 3);
-inventory( player ).add( luckyRod );
-
+exports.hi = function( player ){
+  echo( player, 'Hi ' + player.name);
+};
 ```
-The inventory module exposes a single function which when passed a player or NPC will return an object with 3 methods:
 
-* add : Adds items to the inventory (Expects parameters of type `net.canarymod.api.inventory.Item` - I strongly recommend using the `items` module for constructing items)
-* remove : removes items from the inventory (Expects parameters of type `net.canarymod.api.inventory.Item` - I strongly recommend using the `items` module for constructing items)
-* contains : checks to see if there is the specified type and amount of item in the inventory (Expects parameters of type `net.canarymod.api.inventory.Item` - I strongly recommend using the `items` module for constructing items)
+... then it can be invoked like this: `/js walterh.hi( self )` . This
+lets every player/student create their own functions without having
+naming collisions.
+
+It's strongly recommended that the
+`scriptcraft/players/` directory is shared so that
+others can connect to it and drop .js files into their student
+directories. On Ubuntu, select the folder in Nautilus (the default
+file browser) then right-click and choose *Sharing Options*, check the
+*Share this folder* checkbox and the *Allow others to create and
+delete files* and *Guest access* checkboxes. Click *Create Share*
+button to close the sharing options dialog. Students can then access
+the shared folder as follows...
+
+ * Windows:   Open Explorer, Go to \\{serverAddress}\players\
+ * Macintosh: Open Finder,   Go to smb://{serverAddress}/players/
+ * Linux:     Open Nautilus, Go to smb://{serverAddress}/players/
+
+... where {serverAddress} is the ip address of the server (this is
+displayed to whoever invokes the gnanclass.allowScripting() function.)
+
+### jsp gnanclass command
+The `jsp gnanclass` command makes it easy for tutors to turn on or off
+gnanclass mode. This command can only be used by server operators. To
+turn on gnanclass mode (enable scripting for all players):
+
+    jsp gnanclass on
+
+To turn off gnanclass mode (disable scripting for all players):
+
+    jsp gnanclass off
+
+The `jsp gnanclass` command is provided as an easier way to turn on or
+off gnanclass mode. This should be used in preference to the
+gnanclass.allowScripting() function which is provided only for
+programmatically enabling or disabling gnanclass mode.
+
+### gnanclass.allowScripting() function
+
+Allow or disallow anyone who connects to the server (or is already
+connected) to use ScriptCraft. This function is preferable to granting 'ops' privileges 
+to every student in a Minecraft gnanclass environment.
+
+Whenever any file is added/edited or removed from any of the players/
+directories the contents are automatically reloaded. This is to
+facilitate quick turnaround time for students getting to grips with
+Javascript.
+
+#### Parameters
+
+ * canScript : true or false
+
+#### Example
+
+To allow all players (and any players who connect to the server) to
+use the `js` and `jsp` commands...
+
+    /js gnanclass.allowScripting( true, self )
+
+To disallow scripting (and prevent players who join the server from using the commands)...
+
+    /js gnanclass.allowScripting( false, self )
+
+Only ops users can run the gnanclass.allowScripting() function - this is so that students 
+don't try to bar themselves and each other from scripting.
 
 ## Asynchronous Input Module
 
