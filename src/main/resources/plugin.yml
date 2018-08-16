@@ -1,6 +1,7 @@
 name: scriptcraft
 main: org.scriptcraftjs.bukkit.ScriptCraftPlugin
 version: [[version]]
+api-version: "1.13"
 commands:
    js:
       description: Evaluate javascript.
