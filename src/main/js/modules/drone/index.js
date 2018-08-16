@@ -348,7 +348,7 @@ function makeTypeIdAndDataSetter() {
     console.log('Drone using CraftEvil.setTypeIdAndData method');
     var CraftEvil = Java.type(server.class.package.name + '.util.CraftEvil');
     return function(block, typeId, data, applyPhysics) {
-      CraftEvil.setTypeIdAndData(block, typeId, data, applyPhysics);
+      CraftEvil.setTypeIdAndData(block, typeId, data, !!applyPhysics);
     };
   }
 }
