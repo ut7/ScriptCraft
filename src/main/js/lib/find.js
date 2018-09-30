@@ -2,12 +2,11 @@
 var File = java.io.File;
 module.exports = function find(dir, filter) {
   var result = [];
-  function recurse(dir, store) {
+  function recurse(dirfile, store) {
     var files,
       len,
       i,
-      file,
-      dirfile = new File(dir);
+      file;
 
     if (typeof filter == 'undefined') {
       files = dirfile.list();
@@ -17,14 +16,15 @@ module.exports = function find(dir, filter) {
     len = files.length;
     i = 0;
     for (; i < len; i++) {
-      file = new File(dir + '/' + files[i]);
+      file = new File(dirfile, files[i]);
       if (file.isDirectory()) {
-        recurse(file.canonicalPath, store);
+        recurse(file, store);
       } else {
         store.push(('' + file.canonicalPath).replace(/\\\\/g, '/'));
       }
     }
   }
-  recurse(dir, result);
+  var dirfile = dir instanceof File ? dir : new File(dir);
+  recurse(dirfile, result);
   return result;
 };
