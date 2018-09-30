@@ -46,7 +46,7 @@ function argsToArray(args) {
 function consMsg(params) {
   var args = argsToArray(params);
   if (args.length > 1) {
-    return java.lang.String.format(args[0], args.slice(1));
+    return java.lang.String.format(args[0], Java.to(args.slice(1)));
   } else {
     return args[0];
   }

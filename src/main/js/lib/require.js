@@ -215,7 +215,7 @@ When resolving module names to file paths, ScriptCraft uses the following rules.
         _format(
           "require() failed to find matching file for module '%s' " +
             "in working directory '%s' ",
-          [path, parentFile.canonicalPath]
+          path, parentFile.canonicalPath
         );
       if (!('' + path).match(/^\./)) {
         errMsg =
