@@ -453,7 +453,7 @@ function __onEnable(__engine, __plugin, __script) {
     if (__plugin.canary) {
       sender.message(msg);
     } else {
-      sender.sendMessage(msg);
+      sender.sendMessage('' + msg);
     }
   } // end echo()
   function _canonize(file) {
