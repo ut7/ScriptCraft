@@ -81,7 +81,7 @@ function invokeNow(fn) {
 function invokeLater(fn) {
   if (__plugin.bukkit) {
     server.scheduler[
-      'runTaskAsynchronously​(org.bukkit.plugin.Plugin, java.lang.Runnable)'
+      'runTaskAsynchronously(org.bukkit.plugin.Plugin, java.lang.Runnable)'
     ](__plugin, fn);
     return;
   }
